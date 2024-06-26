@@ -40,104 +40,109 @@ void setup(void) {
 }
 
 void loop(void) {
-  uint8_t success;
+  detectTag();
+}
+
+void detectTag() {
   uint8_t uid[7];  // Buffer to store the returned UID (up to 7 bytes for ISO14443A)
   uint8_t uidLength;  // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
 
-  // Wait for a card. When one is found, 'uid' will be populated with
-  // the UID, and 'uidLength' will indicate the size of the UID.
-  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+  // Try to read a passive target (this is a blocking call)
+  bool success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
   if (success) {
-    // Display some basic information about the card
-    Serial.println("Found an ISO14443A card");
-    Serial.print("  UID Length: "); Serial.print(uidLength, DEC); Serial.println(" bytes");
-    Serial.print("  UID Value: ");
-    nfc.PrintHex(uid, uidLength);
-    Serial.println("");
+    handleTagDetected(uid, uidLength);
+    waitForTagRemoval();
+  } else {
+    // Optionally, add a small delay to avoid continuous polling
+    delay(100);
+  }
+}
 
-    uint8_t collectedData[MAX_DATA_LENGTH]; // Array to collect data
-    uint16_t collectedLength = 0; // Length of collected data
+void handleTagDetected(uint8_t *uid, uint8_t uidLength) {
+  // Display some basic information about the card
+  Serial.println("Found an ISO14443A card");
+  Serial.print("  UID Length: "); Serial.print(uidLength, DEC); Serial.println(" bytes");
+  Serial.print("  UID Value: ");
+  nfc.PrintHex(uid, uidLength);
+  Serial.println("");
 
-    // Read data from the card
-    if (uidLength == 4) {
-      // MIFARE Classic card
-      for (uint8_t block = 4; block < 64; block++) {
-        uint8_t data[16];
-        success = nfc.mifareclassic_ReadDataBlock(block, data);
+  uint8_t collectedData[MAX_DATA_LENGTH]; // Array to collect data
+  uint16_t collectedLength = 0; // Length of collected data
+
+  // Read data from the card
+  if (uidLength == 4) {
+    // MIFARE Classic card
+    for (uint8_t block = 4; block < 64; block++) {
+      uint8_t data[16];
+      bool success = nfc.mifareclassic_ReadDataBlock(block, data);
+
+      if (success) {
+        // Append block data to collected data
+        memcpy(collectedData + collectedLength, data, 16);
+        collectedLength += 16;
+      } else {
+        Serial.println("Unable to read the requested block!");
+        break;
+      }
+    }
+  } else if (uidLength == 7) {
+    // NTAG card
+    uint16_t estimatedPages = 42; // Default estimated pages for NTAG2xx
+
+    // Read page 3 to determine NTAG type
+    uint8_t configData[NTAG2XX_PAGE_SIZE];
+    bool success = nfc.ntag2xx_ReadPage(NTAG2XX_CONFIG_PAGE, configData);
+
+    if (success) {
+      uint8_t ntagType = configData[2];
+      switch (ntagType) {
+        case 0x12: // NTAG213
+          estimatedPages = 39;
+          break;
+        case 0x3E: // NTAG215
+          estimatedPages = 129;
+          break;
+        case 0x6D: // NTAG216
+          estimatedPages = 225;
+          break;
+        default:
+          Serial.println("Unknown NTAG type!");
+          break;
+      }
+
+      // Read data pages based on estimated pages
+      for (uint16_t i = 4; i < estimatedPages; i++) {
+        uint8_t data[NTAG2XX_PAGE_SIZE];
+        success = nfc.ntag2xx_ReadPage(i, data);
 
         if (success) {
-          // Append block data to collected data
-          memcpy(collectedData + collectedLength, data, 16);
-          collectedLength += 16;
+          // Append page data to collected data
+          memcpy(collectedData + collectedLength, data, NTAG2XX_PAGE_SIZE);
+          collectedLength += NTAG2XX_PAGE_SIZE;
         } else {
-          Serial.println("Unable to read the requested block!");
+          Serial.println("Unable to read the requested page!");
           break;
         }
       }
-    } else if (uidLength == 7) {
-      // NTAG card
-      uint16_t estimatedPages = 42; // Default estimated pages for NTAG2xx
-
-      // Read page 3 to determine NTAG type
-      uint8_t configData[NTAG2XX_PAGE_SIZE];
-      success = nfc.ntag2xx_ReadPage(NTAG2XX_CONFIG_PAGE, configData);
-
-      if (success) {
-        uint8_t ntagType = configData[2];
-        switch (ntagType) {
-          case 0x12: // NTAG213
-            estimatedPages = 39;
-            break;
-          case 0x3E: // NTAG215
-            estimatedPages = 129;
-            break;
-          case 0x6D: // NTAG216
-            estimatedPages = 225;
-            break;
-          default:
-            Serial.println("Unknown NTAG type!");
-            break;
-        }
-
-        // Read data pages based on estimated pages
-        for (uint16_t i = 4; i < estimatedPages; i++) {
-          uint8_t data[NTAG2XX_PAGE_SIZE];
-          success = nfc.ntag2xx_ReadPage(i, data);
-
-          if (success) {
-            // Append page data to collected data
-            memcpy(collectedData + collectedLength, data, NTAG2XX_PAGE_SIZE);
-            collectedLength += NTAG2XX_PAGE_SIZE;
-          } else {
-            Serial.println("Unable to read the requested page!");
-            break;
-          }
-        }
-      } else {
-        Serial.println("Unable to read configuration page!");
-      }
-    }
-
-    if (collectedLength > 0) {
-      // Search for "$AG$" marker in collected data
-      bool foundDataAG = searchAndPrintAGText(collectedData, collectedLength);
-      if (!foundDataAG) {
-        Serial.println("Dieser Tag enthält keine Daten für das AstericsGrid-System (AG)");
-      }
-      // Search for "$AGT$" marker in collected data
-      bool foundDataAGT = searchAndPrintAGTText(collectedData, collectedLength);
-      if (!foundDataAGT) {
-        Serial.println("Dieser Tag enthält keine Daten für das AstericsGrid-System (AGT)");
-      }
     } else {
-      Serial.println("No data read from the card!");
+      Serial.println("Unable to read configuration page!");
     }
+  }
 
-    // Wait for the tag to be removed before scanning again
-    Serial.println("Waiting for tag removal...");
-    waitForTagRemoval();
-    Serial.println("Tag removed. Waiting for a new tag...");
+  if (collectedLength > 0) {
+    // Search for "$AG$" marker in collected data
+    bool foundDataAG = searchAndPrintAGText(collectedData, collectedLength);
+    if (!foundDataAG) {
+      Serial.println("Dieser Tag enthält keine Daten für das AstericsGrid-System (AG)");
+    }
+    // Search for "$AGT$" marker in collected data
+    bool foundDataAGT = searchAndPrintAGTText(collectedData, collectedLength);
+    if (!foundDataAGT) {
+      Serial.println("Dieser Tag enthält keine Daten für das AstericsGrid-System (AGT)");
+    }
+  } else {
+    Serial.println("No data read from the card!");
   }
 }
 
@@ -217,34 +222,40 @@ void typeNumbersAndAdditionalKeys(String text) {
     }
   }
   // Type the additional keys '1' and '3'
+  delay(500);
   Keyboard.write('1');
   delay(100);
-  Keyboard.write('3');
+  Keyboard.write('4');
   delay(100);
 }
 
 void waitForTagRemoval() {
-  uint8_t uid[7];  // Buffer to store the returned UID (up to 7 bytes for ISO14443A)
-  uint8_t uidLength;
+  bool tagPresent = true;
+  unsigned long lastCheckTime = 0;
+  const unsigned long checkInterval = 100;  // Check every 100 milliseconds
 
-  while (true) {
-    // Check if a card is still present
-    bool tagPresent = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+  while (tagPresent) {
+    unsigned long currentTime = millis();
 
-    // If no tag is present, break the loop
-    if (!tagPresent) {
-      Serial.println("Tag removal detected.");
-      break;  // Tag was removed
+    // Check periodically based on checkInterval
+    if (currentTime - lastCheckTime >= checkInterval) {
+      lastCheckTime = currentTime;
+
+      // Check if a card is still present using inListPassiveTarget
+      tagPresent = nfc.inListPassiveTarget();
+
+      if (!tagPresent) {
+        Serial.println("Tag removal detected.");
+      } else {
+        Serial.println("Tag still present...");
+      }
     }
-    Serial.println("Tag still present...");
-    delay(100);
+
+    // Optionally, you can add a small delay to yield control to other tasks
+    delay(10);
   }
 
   // Wait for a short moment to ensure the tag is removed
   Serial.println("Ensuring tag is removed...");
   delay(1000);
-
-  // Reset all variables
-  memset(uid, 0, sizeof(uid));
-  uidLength = 0;
 }
