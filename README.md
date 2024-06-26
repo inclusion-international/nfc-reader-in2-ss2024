@@ -22,9 +22,8 @@ Die steigende Verbreitung von NFC-Technologie erfordert kostengünstige und leic
 
 ### Schritt-für-Schritt Anleitung
 
-1. **MicroPython auf dem Raspberry Pi Pico W installieren**
-   - Lade die neueste MicroPython Firmware von der [offiziellen Website](https://micropython.org/download/) herunter.
-   - Flashe die Firmware auf den Pico W gemäß der [Anleitung](https://docs.micropython.org/en/latest/rp2/quickref.html).
+1. Arduino Libary supporter for Arduino on Git
+   https://github.com/earlephilhower/arduino-pico
 
 2. **Verbindungen herstellen**
    - Verbinde das NFC-Modul mit dem Raspberry Pi Pico W wie folgt:
