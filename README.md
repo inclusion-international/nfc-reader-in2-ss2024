@@ -89,12 +89,6 @@ In the future, both the Pico W and the Android app will be able to connect to th
 ## Documentation
 Comprehensive documentation and user guides are available in the `docs` directory. These guides are designed to support users in utilizing the NFC reader and app with AsTeRICS-Grid.
 
-## Contribution
-We welcome contributions to improve this project. Please refer to the `CONTRIBUTING.md` file for guidelines on how to contribute.
-
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
-
 ---
 
 Feel free to reach out if you have any questions or need further assistance with the project setup. Happy building!
