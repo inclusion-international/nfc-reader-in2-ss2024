@@ -16,35 +16,35 @@ Create an innovative Near Field Communication (NFC) reader that serves as an alt
 
 ## Project Components
 
-### Hardware Components
+### Pico W NFC Reader
+
+#### Hardware Components
 - **Microcontroller**: Pico W
 - **NFC Module**: V3 (PN532)
 
-### Connection Details
-To connect the NFC Module V3 (PN532) to the Pico W, follow these steps:
+#### Connection Details
+To connect the NFC Module V3 (PN532) to the Pico W via I2C, follow these steps:
 
 1. **Wiring Connections**:
-   - PN532 SCK to Pico W GPIO2
-   - PN532 MOSI to Pico W GPIO3
-   - PN532 SS to Pico W GPIO4
-   - PN532 MISO to Pico W GPIO5
+   - PN532 SDA to Pico W GPIO2
+   - PN532 SCL to Pico W GPIO3
    - PN532 IRQ to Pico W GPIO6
-   - PN532 RESET to Pico W GPIO7
+   - PN532 RSTO to Pico W GPIO7
+   - PN532 VCC to Pico W 3.3V
+   - PN532 GND to Pico W GND
 
 2. **Power Supply**:
    - Connect the VCC of the PN532 to the 3.3V pin of the Pico W.
    - Connect the GND of the PN532 to the GND pin of the Pico W.
 
-### 3D Printed Enclosures
-We have designed 3D printable enclosures for the NFC reader. The files for these designs are included in the repository. During the testing phase, we used PLA with 5-15% infill. For actual user application, a food-safe filament should be used to ensure safety.
+#### Pico W Firmware
+The firmware for the Pico W is written in C++ using the Arduino framework. The code handles NFC tag detection and data processing. The NFC reader inputs are currently processed as Huffman codes due to limitations in establishing a Bluetooth connection.
 
-### 3D Objects for NFC Tags
-We have also designed simple 3D objects to house the NFC tags. These objects are based on a cylinder with a diameter of 5 cm and a height of 2.5 cm. Different shapes, such as domes, cones, and cups, are placed on top of this cylindrical base. These designs help users easily identify the NFC tags by touch. The STL files for these objects are provided in the repository.
-
-## Software
-
-### Pico W Firmware
-The firmware for the Pico W is written in C++ using the Arduino framework. The code handles NFC tag detection and data processing. The NFC reader inputs are currently processed as Huffman codes due to limitations in establishing a Bluetooth connection. 
+**Libraries Used**:
+- `Wire.h`
+- `SPI.h`
+- `Adafruit_PN532.h`
+- `Keyboard.h`
 
 **Key Functionalities**:
 - **Tag Detection**: The firmware continuously scans for NFC tags.
@@ -67,11 +67,18 @@ The firmware searches for these markers to retrieve the relevant information:
    - Collect the text until the `$FE$` marker is found.
    - This collected text is the Huffman code for the grid.
 
+#### 3D Printed Enclosures
+We have designed 3D printable enclosures for the NFC reader. The files for these designs are included in the repository. During the testing phase, we used PLA with 5-15% infill. For actual user application, a food-safe filament should be used to ensure safety.
+
 ### NFC Tags
 We currently use NTAG215 tags, but the system is also compatible with NTAG213, NTAG216, and MIFARE tags. It is crucial that the necessary information is stored between the correct markers on the tags:
 
 - **Object Name**: Stored between `$AG$` and `$FE$`.
 - **Huffman Code**: Stored between `$AGT$` and `$FE$`.
+
+#### 3D Objects for NFC Tags
+We have also designed simple 3D objects to house the NFC tags. These objects are based on a cylinder with a diameter of 5 cm and a height of 2.5 cm. Different shapes, such as domes, cones, and cups, are placed on top of this cylindrical base. These designs help users easily identify the NFC tags by touch. The STL files for these objects are provided in the repository.
+
 
 ### Android App
 The Android app is designed to provide similar functionality as the hardware NFC reader. The app uses the smartphone's built-in NFC capabilities and is designed with accessibility features to ensure usability by blind and visually impaired users. However, the integration with AsTeRICS-Grid and complete data processing from the NFC tags are not yet implemented. The app source code and installation instructions are provided in the `android_app` directory of this repository.
@@ -82,6 +89,11 @@ In the future, both the Pico W and the Android app will be able to connect to th
 ## Documentation
 Comprehensive documentation and user guides are available in the `docs` directory. These guides are designed to support users in utilizing the NFC reader and app with AsTeRICS-Grid.
 
+## Contribution
+We welcome contributions to improve this project. Please refer to the `CONTRIBUTING.md` file for guidelines on how to contribute.
+
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
