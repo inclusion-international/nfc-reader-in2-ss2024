@@ -53,6 +53,7 @@ We have designed 3D printable enclosures for the NFC reader. The files for these
 To connect the NFC Module V3 (PN532) to the Pico W via I2C, follow these steps:
 
 1. **Wiring Connections**:
+
 ![Wiring ](Docs/circuit.png)
    - PN532 SDA to Pico W GPIO2
    - PN532 SCL to Pico W GPIO3
