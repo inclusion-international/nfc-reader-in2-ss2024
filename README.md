@@ -67,18 +67,32 @@ The firmware searches for these markers to retrieve the relevant information:
    - Collect the text until the `$FE$` marker is found.
    - This collected text is the Huffman code for the grid.
 
-#### 3D Printed Enclosures
-We have designed 3D printable enclosures for the NFC reader. The files for these designs are included in the repository. During the testing phase, we used PLA with 5-15% infill. For actual user application, a food-safe filament should be used to ensure safety.
-
 ### NFC Tags
 We currently use NTAG215 tags, but the system is also compatible with NTAG213, NTAG216, and MIFARE tags. It is crucial that the necessary information is stored between the correct markers on the tags:
 
 - **Object Name**: Stored between `$AG$` and `$FE$`.
 - **Huffman Code**: Stored between `$AGT$` and `$FE$`.
 
-#### 3D Objects for NFC Tags
+### 3D Objects for NFC Tags
 We have also designed simple 3D objects to house the NFC tags. These objects are based on a cylinder with a diameter of 5 cm and a height of 2.5 cm. Different shapes, such as domes, cones, and cups, are placed on top of this cylindrical base. These designs help users easily identify the NFC tags by touch. The STL files for these objects are provided in the repository.
 
+### 3D Printed Enclosures
+We have designed 3D printable enclosures for the NFC reader. The files for these designs are included in the repository. During the testing phase, we used PLA with 5-15% infill. For actual user application, a food-safe filament should be used to ensure safety.
+
+### Grid-Setup
+For first-time setup, follow these steps to configure AsTeRICS-Grid:
+
+1. **Create an Account**: Register a new account on the AsTeRICS-Grid platform.
+2. **Add the NFC Grid**: From the repository, add the NFC-Grid as an example.
+3. **Import Data**: Ensure to select "Benutzerdefinierte Daten aus Datei importieren" when importing data.
+
+**Note**: The correct Huffman coding must be used both in the code and on the NFC tags. Adjust the `#define Delet` function and the tags to match the Huffman codes displayed in the Grid.
+
+### Connecting the NFC Reader to a PC
+1. **Connect via USB**: Use a USB cable to connect the Pico W to your computer.
+2. **Install Necessary Drivers**: Ensure that any necessary drivers for the Pico W are installed on your computer.
+3. **Open AsTeRICS-Grid**: Open the AsTeRICS-Grid software and navigate to the NFC grid.
+4. **Test the Connection**: Place an NFC tag near the reader and check if the data is correctly transmitted to AsTeRICS-Grid.
 
 ### Android App
 The Android app is designed to provide similar functionality as the hardware NFC reader. The app uses the smartphone's built-in NFC capabilities and is designed with accessibility features to ensure usability by blind and visually impaired users. However, the integration with AsTeRICS-Grid and complete data processing from the NFC tags are not yet implemented. The app source code and installation instructions are provided in the `android_app` directory of this repository.
@@ -87,7 +101,133 @@ The Android app is designed to provide similar functionality as the hardware NFC
 In the future, both the Pico W and the Android app will be able to connect to the AsTeRICS-Grid via Bluetooth. NFC tags will store complete grid information, allowing the device to be used on any PC without additional setup.
 
 ## Documentation
-Comprehensive documentation and user guides are available in the `docs` directory. These guides are designed to support users in utilizing the NFC reader and app with AsTeRICS-Grid.
+The following documents and resources are available to help you understand and work with the NFC Reader for AsTeRICS-Grid project:
+
+### 1. User Guide
+Detailed instructions on how to use the NFC reader and the Android app with AsTeRICS-Grid.
+
+**Location**: `docs/user_guide.md`
+
+**Contents**:
+
+#### Setting up the NFC Reader
+1. **Power the Pico W**: Connect the Pico W to a power source using a micro-USB cable.
+2. **Connect the NFC Module**: Ensure the NFC Module V3 (PN532) is connected to the Pico W as per the connection details provided.
+3. **Load the Firmware**: Use the Arduino IDE to upload the provided firmware to the Pico W.
+
+#### Connecting the NFC Reader to a PC
+1. **Connect via USB**: Use a USB cable to connect the Pico W to your computer.
+2. **Install Necessary Drivers**: Ensure that any necessary drivers for the Pico W are installed on your computer.
+3. **Open AsTeRICS-Grid**: Open the AsTeRICS-Grid software and navigate to the NFC grid.
+4. **Test the Connection**: Place an NFC tag near the reader and check if the data is correctly transmitted to AsTeRICS-Grid.
+
+#### Using the Android App
+1. **Install the App**: Download and install the NFC Reader app on your Android device.
+2. **Enable NFC**: Ensure that NFC is enabled on your Android device.
+3. **Open the App**: Launch the NFC Reader app.
+4. **Scan an NFC Tag**: Place an NFC tag near your device’s NFC sensor and follow the prompts in the app.
+
+#### Troubleshooting Common Issues
+- **No Response from the NFC Reader**: Ensure all connections are secure and the Pico W is powered.
+- **Data Not Displaying in AsTeRICS-Grid**: Verify that the correct firmware is uploaded and the drivers are installed.
+- **Android App Not Scanning Tags**: Make sure NFC is enabled on your device and the tag is correctly positioned near the sensor.
+
+### 2. Developer Guide
+Comprehensive information for developers who want to contribute to the project or modify the existing setup.
+
+**Location**: `docs/developer_guide.md`
+
+**Contents**:
+
+#### Project Structure
+- **Firmware**: Located in the `firmware` directory.
+- **Android App**: Located in the `android_app` directory.
+- **3D Models**: Located in the `3d_models` directory.
+
+#### Setting Up the Development Environment
+1. **Clone the Repository**: Use `git clone` to download the project repository.
+2. **Install Dependencies**: Use the Arduino Library Manager and Android Studio to install necessary dependencies.
+3. **Build the Firmware**: Open the firmware code in the Arduino IDE, select the appropriate board and port, and upload the code to the Pico W.
+4. **Build the Android App**: Open the Android app project in Android Studio, configure the SDK, and build the app.
+
+#### Code Overview for the Pico W Firmware
+- **Main Functions**: Description of the main functions, including `setup()`, `loop()`, `detectTag()`, and data processing functions.
+- **Libraries Used**: Details on the libraries used (`Wire.h`, `SPI.h`, `Adafruit_PN532.h`, `Keyboard.h`).
+
+#### Code Overview for the Android App
+- **Main Components**: Description of the main components and activities in the app.
+- **NFC Integration**: Details on how the app integrates with the device’s NFC hardware.
+
+#### Guidelines for Adding New Features
+- **Feature Requests**: How to submit and prioritize feature requests.
+- **Development Standards**: Coding standards, documentation requirements, and testing procedures.
+
+### 3. Hardware Setup Guide
+Instructions on assembling the hardware components, including connecting the NFC module to the Pico W and 3D printing the enclosures.
+
+**Location**: `docs/hardware_setup_guide.md`
+
+**Contents**:
+
+#### List of Hardware Components
+- Pico W Microcontroller
+- NFC Module V3 (PN532)
+- USB Cable
+- Breadboard and Wires (for prototyping)
+- Power Supply (if needed for standalone operation)
+
+#### Wiring Diagrams and Connection Details
+1. **NFC Module to Pico W Connections (I2C)**:
+   - PN532 SDA to Pico W GPIO2
+   - PN532 SCL to Pico W GPIO3
+   - PN532 IRQ to Pico W GPIO6
+   - PN532 RSTO to Pico W GPIO7
+   - PN532 VCC to Pico W 3.3V
+   - PN532 GND to Pico W GND
+
+#### 3D Printing Settings and Assembly Instructions
+- **Printing Settings**:
+  - Material: PLA for testing, food-safe filament for final use
+  - Infill: 5-15%
+  - Layer Height: 0.2 mm
+  - Print Speed: 50 mm/s
+
+- **Assembly Instructions**:
+  1. **Print the Enclosures**: Use the provided STL files to print the enclosure parts.
+  2. **Assemble the Hardware**: Place the Pico W and NFC Module inside the printed enclosure.
+  3. **Secure the Components**: Ensure all components are securely fitted and the connections are stable.
+
+### 4. 3D Models and Printing Instructions
+Details about the 3D printed enclosures and NFC tag objects.
+
+**Location**: `docs/3d_printing_guide.md`
+
+**Contents**:
+
+#### STL Files for Enclosures and NFC Tag Objects
+- **Enclosure STL Files**: [Link to Enclosure STL Files](path/to/enclosure/files)
+- **NFC Tag Objects STL Files**: [Link to NFC Tag Objects STL Files](path/to/tag/objects/files)
+
+#### Recommended Materials and Printing Settings
+- **Materials**:
+  - PLA for testing purposes.
+  - Food-safe filament for final user application.
+
+- **Printing Settings**:
+  - Infill: 5-15%
+  - Layer Height: 0.2 mm
+  - Print Speed: 50 mm/s
+
+#### Assembly Instructions
+- **Enclosure Assembly**:
+  1. Print the enclosure parts using the provided STL files.
+  2. Assemble the printed parts to form the complete enclosure.
+  3. Place the Pico W and NFC Module inside the enclosure and secure them.
+  
+- **NFC Tag Object Assembly**:
+  1. Print the NFC tag objects using the provided STL files.
+  2. Attach the NFC tags to the printed objects.
+  3. Use the objects to identify NFC tags by touch.
 
 ---
 
