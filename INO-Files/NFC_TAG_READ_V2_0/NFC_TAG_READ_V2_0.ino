@@ -3,10 +3,7 @@
 #include <Adafruit_PN532.h>
 #include <Keyboard.h>
 
-#define PN532_SCK  (2)
-#define PN532_MOSI (3)
-#define PN532_SS   (4)
-#define PN532_MISO (5)
+
 
 #define PN532_IRQ   (6)
 #define PN532_RESET (7)
