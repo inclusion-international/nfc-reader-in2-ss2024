@@ -1,4 +1,3 @@
-```markdown
 # NFC Reader for AsTeRICS-Grid
 
 ## Problem Description
@@ -87,4 +86,3 @@ Comprehensive documentation and user guides are available in the `docs` director
 ---
 
 Feel free to reach out if you have any questions or need further assistance with the project setup. Happy building!
-```
