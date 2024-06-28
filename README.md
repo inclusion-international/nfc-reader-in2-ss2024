@@ -1,5 +1,29 @@
 # NFC Reader for AsTeRICS-Grid
 
+## Table of Contents
+
+1. [Problem Description](#problem-description)
+2. [Proposed Solution](#proposed-solution)
+    - [Hardware/Software NFC Reader](#hardwaresoftware-nfc-reader)
+    - [Android App with NFC](#android-app-with-nfc)
+3. [Project Components](#project-components)
+    - [Pico W NFC Reader](#pico-w-nfc-reader)
+        - [Hardware Components](#hardware-components)
+        - [3D Printed Enclosures](#3d-printed-enclosures)
+        - [Connection Details](#connection-details)
+        - [Pico W Firmware](#pico-w-firmware)
+        - [Searching Data on NFC Tags](#searching-data-on-nfc-tags)
+    - [NFC Tags](#nfc-tags)
+        - [3D Objects for NFC Tags](#3d-objects-for-nfc-tags)
+    - [Android App](#android-app)
+4. [Future Improvements](#future-improvements)
+5. [Documentation](#documentation)
+    - [User Guide](#user-guide)
+    - [Developer Guide](#developer-guide)
+    - [Hardware Setup Guide](#hardware-setup-guide)
+    - [3D Models and Printing Instructions](#3d-models-and-printing-instructions)
+
+
 ## Problem Description
 Assistive Augmentative Communication (AAC) solutions, such as AsTeRICS-Grid, offer essential communication aids to individuals with speech and language impairments. However, the reliance on visual-based or complex input methods can limit accessibility for users with visual impairments, including blind individuals. There's a significant need for intuitive, non-visual alternative input methods to enhance interaction with AAC software for a broader range of users.
 
